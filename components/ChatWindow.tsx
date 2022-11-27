@@ -1,0 +1,204 @@
+import {
+  DotsThreeVertical,
+  Paperclip,
+  PaperPlaneRight,
+  Smiley,
+} from "phosphor-react"
+
+import Avatar from "./Avatar"
+import ChatMessage from "./ChatMessage"
+import {
+  KeyboardEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import { ChatContext, IChatRecipientContext } from "context/chatContext"
+import clsx from "clsx"
+
+import EmptyMessages from "./EmptyMessages"
+import {
+  onValue,
+  push,
+  ref,
+  serverTimestamp,
+  set,
+  update,
+} from "firebase/database"
+import { auth, database } from "@/firebase"
+import { useRouter } from "next/router"
+import moment from "moment"
+import EmptyChat from "./EmptyChat"
+import { useAuthState } from "react-firebase-hooks/auth"
+
+export default function AllChats() {
+  const { recipientData, setRecipientData } = useContext(
+    ChatContext,
+  ) as IChatRecipientContext
+
+  const [messages, setMessages] = useState<IMessage[]>([])
+
+  const chatTextInputRef = useRef<HTMLInputElement>(null)
+  const [chatText, setChatText] = useState("")
+
+  const router = useRouter()
+  const { chatId } = router.query
+
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView()
+  }
+
+  const callbackFunction = (entries: any[]) => {
+    const [entry] = entries
+    if (entry.isIntersecting) {
+      console.log("visible")
+    }
+  }
+  const options = useMemo(() => {
+    return {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.3,
+    }
+  }, [])
+
+  const [loggedInUser] = useAuthState(auth)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(callbackFunction, options)
+    const currentTarget = bottomRef.current
+    if (currentTarget) observer.observe(currentTarget)
+  }, [chatId, options])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, chatId, loggedInUser])
+
+  useEffect(() => {
+    recipientData === null && router.push("/")
+  }, [recipientData, router])
+
+  useEffect(() => {
+    const chatMessagesRef = ref(database, `/chats/${chatId}/messages`)
+    onValue(chatMessagesRef, (snapshot) => {
+      const val = snapshot.val()
+      if (val) {
+        const messages = Object.entries(val).map(
+          ([key, value]: [string, any]) => {
+            return {
+              id: key,
+              ...value,
+            }
+          },
+        )
+        setMessages(messages)
+        scrollToBottom()
+      }
+    })
+  }, [chatId])
+
+  const sendMessage = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && chatText !== "") {
+      // set messages
+      const messagesRef = ref(database, "chats/" + chatId + "/messages")
+      const messageRef = push(messagesRef)
+      const message = {
+        chatId: messageRef.key,
+        text: chatText,
+        createdAt: serverTimestamp(),
+        senderId: recipientData?.uid,
+        state: recipientData?.online ? "delivered" : "sent",
+      }
+      set(messageRef, message)
+
+      setChatText("")
+      chatTextInputRef.current!.blur()
+      chatTextInputRef.current!.value = ""
+    }
+  }
+
+  const messageSentTime = moment(recipientData?.lastSeen).fromNow()
+
+  if (!recipientData) return <EmptyChat />
+  return (
+    <div className="flex flex-col items-center w-full h-full max-h-[calc(100vh-3rem)]  text-5xl font-bold text-gray-400">
+      {/* Top Bar */}
+
+      <div className="flex items-center justify-between w-full px-5 py-3 bg-gray-200">
+        <div className="flex items-center gap-4 text-sm text-gray-500">
+          <Avatar width={50} height={50} src={recipientData?.photoURL} />
+          <div className="flex flex-col">
+            <h3> {recipientData?.email.split("@")[0]}</h3>
+            <p className="text-xs font-light">
+              {recipientData?.online
+                ? "online"
+                : recipientData?.lastSeen
+                ? messageSentTime
+                : "..."}
+            </p>
+          </div>
+        </div>
+        {/* Action Row */}
+        <div className="flex items-center gap-5">
+          <button className="p-3 bg-transparent rounded-full active:bg-gray-300">
+            <Paperclip color="#676767" size={24} weight="bold" />
+          </button>
+          <button className="p-3 bg-transparent rounded-full active:bg-gray-300">
+            <DotsThreeVertical color="#676767" size={24} weight="bold" />
+          </button>
+        </div>
+      </div>
+
+      {/* Chat Window */}
+      <div className="relative flex w-full overflow-y-scroll grow">
+        {messages && messages?.length <= 0 ? (
+          <EmptyMessages />
+        ) : (
+          <div className="flex flex-col w-full h-full">
+            {messages.map((message) => (
+              <ChatMessage key={message.uid} message={message} />
+            ))}
+            <div
+              ref={bottomRef}
+              className="absolute w-4 h-4 text-xs bg-red-100 bottom-10 left-10"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Text Bar */}
+      <div className="flex items-center w-full">
+        <span className="flex items-center h-12 pl-4 cursor-pointer">
+          <Smiley color="#676767" size={24} weight="bold" />
+        </span>
+        <div
+          className="flex items-center justify-between w-full px-4 py-3 cursor-pointer"
+          onClick={() => chatTextInputRef.current!.focus()}
+        >
+          <input
+            ref={chatTextInputRef}
+            type="text"
+            placeholder="Type a message"
+            className="w-full h-12 px-5 text-base font-normal text-gray-900 bg-gray-200 rounded-lg text-ellipsis focus:outline-none"
+            onChange={(e) => setChatText(e.target.value)}
+            onKeyDown={sendMessage}
+          />
+          <span
+            onClick={(e) => {
+              sendMessage({ ...e, key: "Enter" } as any)
+            }}
+            className={clsx(
+              !chatText ? "hidden" : "flex",
+              "items-center h-12 pl-4",
+            )}
+          >
+            <PaperPlaneRight color="#676767" size={24} weight="bold" />
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}

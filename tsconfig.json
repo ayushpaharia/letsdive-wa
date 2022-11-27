@@ -18,7 +18,15 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/firebase": ["firebase/clientApp.ts"],
+      "@/types/*": ["types/*"],
+      "@/css": ["styles/globals.css"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
