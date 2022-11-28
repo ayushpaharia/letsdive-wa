@@ -34,6 +34,10 @@ import moment from "moment"
 import EmptyChat from "./EmptyChat"
 import { useAuthState } from "react-firebase-hooks/auth"
 
+import data from "@emoji-mart/data"
+//@ts-ignore
+import Picker from "@emoji-mart/react"
+
 export default function AllChats() {
   const { recipientData, setRecipientData } = useContext(
     ChatContext,
@@ -43,6 +47,7 @@ export default function AllChats() {
 
   const chatTextInputRef = useRef<HTMLInputElement>(null)
   const [chatText, setChatText] = useState("")
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   const router = useRouter()
   const { chatId } = router.query
@@ -147,10 +152,10 @@ export default function AllChats() {
         senderId: recipientData?.uid,
         state: recipientData?.online ? "delivered" : "sent",
       }
+
       set(messageRef, message)
       setChatText("")
       chatTextInputRef.current!.blur()
-      chatTextInputRef.current!.value = ""
 
       scrollToBottom()
     }
@@ -162,7 +167,6 @@ export default function AllChats() {
   return (
     <div className="flex flex-col items-center w-full h-full max-h-[calc(100vh-3rem)]  text-5xl font-bold text-gray-400">
       {/* Top Bar */}
-
       <div className="flex items-center justify-between w-full px-5 py-3 bg-gray-200">
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Avatar width={50} height={50} src={recipientData?.photoURL} />
@@ -210,9 +214,26 @@ export default function AllChats() {
       </div>
 
       {/* Text Bar */}
-      <div className="flex items-center w-full">
-        <span className="flex items-center h-12 pl-4 cursor-pointer">
+      <div className="relative flex items-center w-full">
+        <span
+          className="flex items-center h-12 pl-4 cursor-pointer"
+          onClick={() => setShowEmojiPicker((prev) => !prev)}
+        >
           <Smiley color="#676767" size={24} weight="bold" />
+        </span>
+        <span
+          className={clsx(
+            showEmojiPicker ? "block" : "hidden",
+            "absolute top-0 -translate-x-[calc(50%-20px)] -translate-y-full",
+          )}
+        >
+          <Picker
+            data={data}
+            onEmojiSelect={(emoji: { native: string }) => {
+              chatTextInputRef.current!.focus()
+              setChatText((prev) => prev + emoji.native)
+            }}
+          />
         </span>
         <div
           className="flex items-center justify-between w-full px-4 py-3 cursor-pointer"
@@ -224,6 +245,7 @@ export default function AllChats() {
             placeholder="Type a message"
             className="w-full h-12 px-5 text-base font-normal text-gray-900 bg-gray-200 rounded-lg text-ellipsis focus:outline-none"
             onChange={(e) => setChatText(e.target.value)}
+            value={chatText}
             onKeyDown={sendMessage}
           />
           <span
