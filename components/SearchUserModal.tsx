@@ -1,5 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react"
 
+import { MagnifyingGlass } from "phosphor-react"
+
+import clsx from "clsx"
 import {
   onValue,
   orderByKey,
@@ -9,15 +12,11 @@ import {
   serverTimestamp,
   set,
 } from "firebase/database"
-import { MagnifyingGlass } from "phosphor-react"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 import { auth, database } from "@/firebase"
-import clsx from "clsx"
-
+import { Avatar } from "@/components"
 import { IModalContext, ModalContext } from "context/modalContext"
-import Avatar from "./Avatar"
-import { useAuthState } from "react-firebase-hooks/auth"
-import moment from "moment"
 
 export default function SearchUserModal() {
   const { isModalVisible, toggleModal } = useContext(

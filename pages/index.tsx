@@ -1,16 +1,9 @@
 import Head from "next/head"
+import { NextPage } from "next"
 
-import Sidebar from "components/Sidebar"
-import SearchUserModal from "components/SearchUserModal"
-import { ReactElement, useState } from "react"
-import { NextPageWithLayout } from "./_app"
-import EmptyChat from "components/EmptyChat"
+import { EmptyChat, SearchUserModal, Sidebar } from "@/components"
 
-const Home: NextPageWithLayout = () => {
-  return <EmptyChat />
-}
-
-Home.getLayout = function getLayout(page: ReactElement) {
+const Home: NextPage = () => {
   return (
     <div>
       <Head>
@@ -22,7 +15,7 @@ Home.getLayout = function getLayout(page: ReactElement) {
         <main className="relative flex w-full h-full bg-gray-100 rounded-sm">
           <SearchUserModal />
           <Sidebar />
-          {page}
+          <EmptyChat />
         </main>
       </div>
     </div>

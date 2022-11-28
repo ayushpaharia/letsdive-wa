@@ -1,11 +1,9 @@
+import { NextPage } from "next"
 import Head from "next/head"
 
-import ChatWindow from "components/ChatWindow"
-import Sidebar from "components/Sidebar"
-import SearchUserModal from "components/SearchUserModal"
-import { NextPageWithLayout } from "./_app"
+import { ChatWindow, Sidebar, SearchUserModal } from "@/components"
 
-const Home: NextPageWithLayout = () => {
+const Home: NextPage = () => {
   return (
     <div>
       <Head>

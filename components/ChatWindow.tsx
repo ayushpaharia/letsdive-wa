@@ -1,13 +1,4 @@
 import {
-  DotsThreeVertical,
-  Paperclip,
-  PaperPlaneRight,
-  Smiley,
-} from "phosphor-react"
-
-import Avatar from "./Avatar"
-import ChatMessage from "./ChatMessage"
-import {
   KeyboardEvent,
   useCallback,
   useContext,
@@ -16,10 +7,20 @@ import {
   useRef,
   useState,
 } from "react"
-import { ChatContext, IChatRecipientContext } from "context/chatContext"
-import clsx from "clsx"
+import { useRouter } from "next/router"
 
-import EmptyMessages from "./EmptyMessages"
+import clsx from "clsx"
+import moment from "moment"
+import data from "@emoji-mart/data"
+//@ts-ignore
+import Picker from "@emoji-mart/react"
+import { useAuthState } from "react-firebase-hooks/auth"
+import {
+  DotsThreeVertical,
+  Paperclip,
+  PaperPlaneRight,
+  Smiley,
+} from "phosphor-react"
 import {
   onValue,
   push,
@@ -28,20 +29,13 @@ import {
   set,
   update,
 } from "firebase/database"
-import { auth, database } from "@/firebase"
-import { useRouter } from "next/router"
-import moment from "moment"
-import EmptyChat from "./EmptyChat"
-import { useAuthState } from "react-firebase-hooks/auth"
 
-import data from "@emoji-mart/data"
-//@ts-ignore
-import Picker from "@emoji-mart/react"
+import { Avatar, ChatMessage, EmptyMessages, EmptyChat } from "@/components"
+import { ChatContext, IChatRecipientContext } from "context/chatContext"
+import { auth, database } from "@/firebase"
 
 export default function AllChats() {
-  const { recipientData, setRecipientData } = useContext(
-    ChatContext,
-  ) as IChatRecipientContext
+  const { recipientData } = useContext(ChatContext) as IChatRecipientContext
 
   const [messages, setMessages] = useState<IMessage[]>([])
 

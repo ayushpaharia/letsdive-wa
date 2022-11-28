@@ -25,7 +25,9 @@
       "@/*": ["src/*"],
       "@/firebase": ["firebase/clientApp.ts"],
       "@/types/*": ["types/*"],
-      "@/css": ["styles/globals.css"]
+      "@/css": ["styles/globals.css"],
+      "@/components": ["components/index.ts"],
+      "@/components/*": ["components/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

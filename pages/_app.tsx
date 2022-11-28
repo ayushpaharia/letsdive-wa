@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, ReactElement, useContext } from "react"
+import { ReactNode, useEffect, ReactElement } from "react"
 import { NextPage } from "next"
 import type { AppProps } from "next/app"
 
@@ -11,15 +11,7 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import Login from "./login"
 import ChatProvider from "context/chatContext"
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode
-}
-
-type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout
-}
-
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+export default function App({ Component, pageProps }: AppProps) {
   const [user] = useAuthState(auth)
 
   useEffect(() => {
@@ -54,11 +46,11 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     return <Login />
   }
 
-  const getLayout = Component.getLayout ?? ((page) => page)
-
   return (
     <ChatProvider>
-      <ModalProvider>{getLayout(<Component {...pageProps} />)}</ModalProvider>
+      <ModalProvider>
+        <Component {...pageProps} />
+      </ModalProvider>
     </ChatProvider>
   )
 }

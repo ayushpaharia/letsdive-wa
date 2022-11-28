@@ -1,16 +1,16 @@
 import { useContext, useEffect, useId, useRef, useState } from "react"
+import { useRouter } from "next/router"
 
+import { ChatText, MagnifyingGlass, SignOut, House } from "phosphor-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 
 import { auth, database } from "@/firebase"
 
-import { ChatText, MagnifyingGlass, SignOut, House } from "phosphor-react"
-import Avatar from "components/Avatar"
-import { IModalContext, ModalContext } from "context/modalContext"
-import { onValue, ref, serverTimestamp, set } from "firebase/database"
 import moment from "moment"
+import { onValue, ref, serverTimestamp, set } from "firebase/database"
+import { Avatar } from "@/components"
+import { IModalContext, ModalContext } from "context/modalContext"
 import { ChatContext, IChatRecipientContext } from "context/chatContext"
-import { useRouter } from "next/router"
 
 interface IChatTabData extends IUser {
   recipientId: string
