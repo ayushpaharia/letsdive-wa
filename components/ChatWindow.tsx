@@ -9,6 +9,7 @@ import Avatar from "./Avatar"
 import ChatMessage from "./ChatMessage"
 import {
   KeyboardEvent,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -51,12 +52,49 @@ export default function AllChats() {
     bottomRef.current?.scrollIntoView()
   }
 
-  const callbackFunction = (entries: any[]) => {
-    const [entry] = entries
-    if (entry.isIntersecting) {
-      console.log("visible")
-    }
-  }
+  const [loggedInUser] = useAuthState(auth)
+
+  const callbackFunction = useCallback(
+    (entries: any[]) => {
+      const [entry] = entries
+      if (entry.isIntersecting) {
+        const messagesRef = ref(database, "chats/" + chatId + "/messages")
+        onValue(
+          messagesRef,
+          (snapshot) => {
+            const data = snapshot.val()
+            if (data) {
+              const messages = Object.entries(data).map(
+                ([key, value]: [string, any]) => {
+                  return {
+                    ...value,
+                    uid: key,
+                  }
+                },
+              ) as unknown as IMessage[]
+              setMessages(messages)
+            }
+          },
+          {
+            onlyOnce: true,
+          },
+        )
+        messages.forEach(({ uid, ...rest }) => {
+          const messageRef = ref(
+            database,
+            "chats/" + chatId + "/messages/" + uid,
+          )
+          if (rest.senderId === loggedInUser?.uid) {
+            update(messageRef, {
+              ...rest,
+              state: "read",
+            })
+          }
+        })
+      }
+    },
+    [chatId, loggedInUser?.uid, messages],
+  )
   const options = useMemo(() => {
     return {
       root: null,
@@ -65,37 +103,34 @@ export default function AllChats() {
     }
   }, [])
 
-  const [loggedInUser] = useAuthState(auth)
-
   useEffect(() => {
     const observer = new IntersectionObserver(callbackFunction, options)
     const currentTarget = bottomRef.current
     if (currentTarget) observer.observe(currentTarget)
-  }, [chatId, options])
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages, chatId, loggedInUser])
+    return () => {
+      if (currentTarget) observer.unobserve(currentTarget)
+    }
+  }, [options, bottomRef, callbackFunction])
 
   useEffect(() => {
     recipientData === null && router.push("/")
   }, [recipientData, router])
 
   useEffect(() => {
-    const chatMessagesRef = ref(database, `/chats/${chatId}/messages`)
-    onValue(chatMessagesRef, (snapshot) => {
+    const messagesRef = ref(database, "chats/" + chatId + "/messages")
+    onValue(messagesRef, (snapshot) => {
       const val = snapshot.val()
       if (val) {
         const messages = Object.entries(val).map(
           ([key, value]: [string, any]) => {
             return {
-              id: key,
+              uid: key,
               ...value,
             }
           },
         )
         setMessages(messages)
-        scrollToBottom()
       }
     })
   }, [chatId])
@@ -106,17 +141,18 @@ export default function AllChats() {
       const messagesRef = ref(database, "chats/" + chatId + "/messages")
       const messageRef = push(messagesRef)
       const message = {
-        chatId: messageRef.key,
+        chatId: chatId,
         text: chatText,
         createdAt: serverTimestamp(),
         senderId: recipientData?.uid,
         state: recipientData?.online ? "delivered" : "sent",
       }
       set(messageRef, message)
-
       setChatText("")
       chatTextInputRef.current!.blur()
       chatTextInputRef.current!.value = ""
+
+      scrollToBottom()
     }
   }
 
@@ -153,19 +189,23 @@ export default function AllChats() {
       </div>
 
       {/* Chat Window */}
-      <div className="relative flex w-full overflow-y-scroll grow">
+      <div className="flex flex-col w-full overflow-y-scroll grow">
         {messages && messages?.length <= 0 ? (
           <EmptyMessages />
         ) : (
-          <div className="flex flex-col w-full h-full">
-            {messages.map((message) => (
-              <ChatMessage key={message.uid} message={message} />
-            ))}
-            <div
-              ref={bottomRef}
-              className="absolute w-4 h-4 text-xs bg-red-100 bottom-10 left-10"
-            />
-          </div>
+          <>
+            <div className="flex flex-col h-full">
+              {messages.map((message) => (
+                <ChatMessage key={message.uid} message={message} />
+              ))}
+              <div
+                ref={bottomRef}
+                className="relative text-[10px] mr-10 z-10 w-full h-2 invisible"
+              >
+                -
+              </div>
+            </div>
+          </>
         )}
       </div>
 

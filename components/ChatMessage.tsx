@@ -32,7 +32,9 @@ export default function ChatMessage({ message }: IChatMessageProps) {
         {message.text}
         <div className="flex items-center gap-3 text-gray-400 whitespace-nowrap text-[10px] absolute bottom-0 right-0 text-right p-2 uppercase">
           <p className="mt-1">{messageSentTime}</p>
-          <span>{messageByState(message.state)}</span>
+          {loggedInUser?.uid !== message.senderId && (
+            <span>{messageByState(message.state)}</span>
+          )}
         </div>
       </div>
     </div>
