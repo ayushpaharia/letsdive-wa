@@ -11,9 +11,11 @@ import { onValue, ref, serverTimestamp, set } from "firebase/database"
 import { Avatar } from "@/components"
 import { IModalContext, ModalContext } from "context/modalContext"
 import { ChatContext, IChatRecipientContext } from "context/chatContext"
+import clsx from "clsx"
 
 interface IChatTabData extends IUser {
   recipientId: string
+  isActive: boolean
 }
 
 export default function Sidebar() {
@@ -122,6 +124,7 @@ export default function Sidebar() {
           className="w-full h-12 px-5 text-lg bg-gray-200 rounded-r-lg focus:outline-none"
         />
       </div>
+
       {/* All Chats */}
       <div className="flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
         {allChats.map((chatData, idx) => {
@@ -130,6 +133,7 @@ export default function Sidebar() {
               chatId={chatData.uid}
               recipientId={chatData.recipientId}
               key={chatData.uid + chatTabId + idx}
+              isActive={chatData.uid === router.query.chatId}
             />
           )
         })}
@@ -141,6 +145,7 @@ export default function Sidebar() {
 interface IChatTabProps {
   recipientId: string
   chatId: string
+  isActive: boolean
 }
 type IRecipientData = IChatTabProps &
   IUser & {
@@ -148,7 +153,7 @@ type IRecipientData = IChatTabProps &
     lastMessageTime: number
   }
 
-function ChatTab({ recipientId, chatId }: IChatTabProps) {
+function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
   const [tabData, setTabData] = useState<IRecipientData>()
   const { setRecipientData } = useContext(ChatContext) as IChatRecipientContext
 
@@ -173,7 +178,10 @@ function ChatTab({ recipientId, chatId }: IChatTabProps) {
   return (
     <div
       onClick={openChat}
-      className="flex items-center justify-between p-4 pr-5 cursor-pointer hover:bg-gray-200"
+      className={clsx(
+        isActive && "bg-gray-200",
+        "flex items-center justify-between p-4 pr-5 cursor-pointer hover:bg-gray-200",
+      )}
     >
       <span className="">
         <Avatar width={55} height={55} src={tabData?.photoURL} />

@@ -22,6 +22,7 @@ import {
   Smiley,
 } from "phosphor-react"
 import {
+  off,
   onValue,
   push,
   ref,
@@ -130,8 +131,12 @@ export default function AllChats() {
           },
         )
         setMessages(messages)
+        scrollToBottom()
       }
     })
+    return () => {
+      off(messagesRef)
+    }
   }, [chatId])
 
   const sendMessage = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -149,9 +154,8 @@ export default function AllChats() {
 
       set(messageRef, message)
       setChatText("")
-      chatTextInputRef.current!.blur()
-
       scrollToBottom()
+      chatTextInputRef.current!.blur()
     }
   }
 

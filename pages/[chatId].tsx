@@ -7,7 +7,7 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Chats - letsdive-wa</title>
+        <title>Chats - yolo-chat</title>
         <meta name="description" content="Chats - letsdive-wa" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
