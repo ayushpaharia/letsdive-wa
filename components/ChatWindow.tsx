@@ -16,10 +16,12 @@ import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import {
+  ArrowDown,
   DotsThreeVertical,
   Paperclip,
   PaperPlaneRight,
   Smiley,
+  Spinner,
 } from "phosphor-react"
 import {
   off,
@@ -36,7 +38,9 @@ import { ChatContext, IChatRecipientContext } from "context/chatContext"
 import { auth, database } from "@/firebase"
 
 export default function AllChats() {
-  const { recipientData } = useContext(ChatContext) as IChatRecipientContext
+  const { recipientData, isLoading, setLoading } = useContext(
+    ChatContext,
+  ) as IChatRecipientContext
 
   const [messages, setMessages] = useState<IMessage[]>([])
 
@@ -51,6 +55,8 @@ export default function AllChats() {
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView()
   }
+
+  const [isGotoBottomVisible, setGotoBottomVisible] = useState<boolean>(false)
 
   const [loggedInUser] = useAuthState(auth)
 
@@ -73,6 +79,7 @@ export default function AllChats() {
                 },
               ) as unknown as IMessage[]
               setMessages(messages)
+              setGotoBottomVisible(false)
             }
           },
           {
@@ -91,6 +98,8 @@ export default function AllChats() {
             })
           }
         })
+      } else {
+        setGotoBottomVisible(true)
       }
     },
     [chatId, loggedInUser?.uid, messages],
@@ -132,12 +141,14 @@ export default function AllChats() {
         )
         setMessages(messages)
         scrollToBottom()
+        setLoading(false)
       }
     })
+
     return () => {
       off(messagesRef)
     }
-  }, [chatId])
+  }, [chatId, setLoading])
 
   const sendMessage = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && chatText !== "") {
@@ -196,10 +207,16 @@ export default function AllChats() {
           <EmptyMessages />
         ) : (
           <>
-            <div className="flex flex-col h-full">
-              {messages.map((message) => (
-                <ChatMessage key={message.uid} message={message} />
-              ))}
+            <div className="relative flex flex-col h-full">
+              {!isLoading ? (
+                messages.map((message) => (
+                  <ChatMessage key={message.uid} message={message} />
+                ))
+              ) : (
+                <div className="absolute mx-auto overflow-x-hidden top-1/2 left-1/2 animate-spin">
+                  <Spinner size={32} weight="bold" />
+                </div>
+              )}
               <div
                 ref={bottomRef}
                 className="relative text-[10px] mr-10 z-10 w-full h-2 invisible"
@@ -209,6 +226,16 @@ export default function AllChats() {
             </div>
           </>
         )}
+
+        <button
+          onClick={() => scrollToBottom()}
+          className={clsx(
+            !isGotoBottomVisible && "hidden",
+            "absolute z-10 bottom-[100px] right-[270px] p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
+          )}
+        >
+          <ArrowDown color="#676767" size={24} weight="bold" />
+        </button>
       </div>
 
       {/* Text Bar */}

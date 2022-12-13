@@ -129,7 +129,9 @@ export default function SearchUserModal() {
                   <Avatar width={55} height={55} src={user.photoURL} />
                 </span>
                 <div className="flex flex-col justify-center flex-1 h-full ml-4">
-                  <h3 className="text-xl">{user.email.split("@")[0]}</h3>
+                  <h3 className="text-xl">
+                    {user?.name || user.email.split("@")[0]}
+                  </h3>
                   <p className="text-gray-500 truncate text-md">{user.email}</p>
                 </div>
               </div>

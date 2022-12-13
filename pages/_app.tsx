@@ -36,6 +36,7 @@ export default function App({ Component, pageProps }: AppProps) {
       set(ref(database, "/users/" + user?.uid), {
         email: user?.email,
         photoURL: user?.photoURL,
+        name: user?.displayName,
         lastSeen: serverTimestamp(),
         online: true,
       })

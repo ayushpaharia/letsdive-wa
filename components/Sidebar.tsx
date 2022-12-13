@@ -16,6 +16,8 @@ import clsx from "clsx"
 interface IChatTabData extends IUser {
   recipientId: string
   isActive: boolean
+  lastMessage: string
+  lastMessageTime: number
 }
 
 export default function Sidebar() {
@@ -80,6 +82,17 @@ export default function Sidebar() {
     router.push("/")
   }
 
+  // Sort chats by last message
+  const sortChatByLastMessage = (a: IChatTabData, b: IChatTabData) => {
+    if (a.lastMessageTime > b.lastMessageTime) {
+      return -1
+    } else if (a.lastMessageTime < b.lastMessageTime) {
+      return 1
+    } else {
+      return 0
+    }
+  }
+
   return (
     <div className="flex flex-col max-h-[calc(100vh-3rem)] min-w-[22rem] max-w-[40rem] overflow-y-hidden relative border-r-[1px] border-solid border-[#ebebeb]">
       {/* Top bar */}
@@ -109,6 +122,7 @@ export default function Sidebar() {
           </button>
         </div>
       </div>
+
       {/* Search Bar */}
       <div
         className="flex items-center justify-between px-4 py-3 cursor-pointer"
@@ -127,7 +141,7 @@ export default function Sidebar() {
 
       {/* All Chats */}
       <div className="flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
-        {allChats.map((chatData, idx) => {
+        {allChats.sort(sortChatByLastMessage).map((chatData, idx) => {
           return (
             <ChatTab
               chatId={chatData.uid}
@@ -147,15 +161,13 @@ interface IChatTabProps {
   chatId: string
   isActive: boolean
 }
-type IRecipientData = IChatTabProps &
-  IUser & {
-    lastMessage: string
-    lastMessageTime: number
-  }
+type IRecipientData = IChatTabProps & IUser
 
 function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
   const [tabData, setTabData] = useState<IRecipientData>()
-  const { setRecipientData } = useContext(ChatContext) as IChatRecipientContext
+  const { setRecipientData, setLoading } = useContext(
+    ChatContext,
+  ) as IChatRecipientContext
 
   const router = useRouter()
 
@@ -173,6 +185,7 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
   const openChat = () => {
     router.push(`/${tabData?.chatId}`)
     setRecipientData(tabData as IRecipientData)
+    setLoading(true)
   }
 
   return (
@@ -188,7 +201,7 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
       </span>
       <div className="flex flex-col justify-center flex-1 h-full ml-4">
         <h3 className="font-bold text-gray-500 text-md">
-          {tabData?.email.split("@")[0]}
+          {tabData?.name || tabData?.email.split("@")[0]}
         </h3>
         <p className="text-gray-500 truncate text-md">
           {tabData?.online

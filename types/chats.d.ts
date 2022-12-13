@@ -1,8 +1,8 @@
 interface IChat {
   uid: string
   users: IUser[]
-  // lastMessage: string
-  // lastMessageTime: string
+  lastMessage: string
+  lastMessageTime: string
   messages: IMessage[]
   createdAt: string
 }
@@ -22,6 +22,8 @@ interface IUser {
   uid: string
   photoURL: string
   email: string
+  name: string
   lastSeen: string
   online: boolean
+  lastRecievedMessage: string
 }
