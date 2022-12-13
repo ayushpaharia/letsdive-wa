@@ -115,24 +115,25 @@ export default function Sidebar() {
         {/* Action Row */}
         <div className="flex items-center gap-5">
           <button
+            title="Home"
             onClick={closeChat}
             className="p-3 bg-transparent rounded-full active:bg-gray-300"
           >
             <House color="#676767" size={24} weight="bold" />
           </button>
           <button
+            title="Find Chat"
             onClick={toggleModal}
             className="p-3 bg-transparent rounded-full active:bg-gray-300"
           >
             <ChatText color="#676767" size={24} weight="bold" />
           </button>
-          <button className="p-3 bg-transparent rounded-full active:bg-gray-300">
-            <SignOut
-              onClick={signOut}
-              color="#676767"
-              size={24}
-              weight="bold"
-            />
+          <button
+            title="Sign Out"
+            onClick={signOut}
+            className="p-3 bg-transparent rounded-full active:bg-gray-300"
+          >
+            <SignOut color="#676767" size={24} weight="bold" />
           </button>
         </div>
       </div>
