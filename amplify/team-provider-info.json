@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-yolochat-staging-183829-authRole",
+      "UnauthRoleArn": "arn:aws:iam::258600010020:role/amplify-yolochat-staging-183829-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::258600010020:role/amplify-yolochat-staging-183829-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-yolochat-staging-183829-deployment",
+      "UnauthRoleName": "amplify-yolochat-staging-183829-unauthRole",
+      "StackName": "amplify-yolochat-staging-183829",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:258600010020:stack/amplify-yolochat-staging-183829/56b0cb30-7b15-11ed-9dd1-0ab318231cc6",
+      "AmplifyAppId": "d3h161t41lh5pa"
+    },
+    "categories": {
+      "auth": {
+        "yolochat": {}
+      }
+    }
+  }
+}

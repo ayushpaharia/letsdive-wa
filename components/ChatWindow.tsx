@@ -35,11 +35,13 @@ import {
 import { Avatar, ChatMessage, EmptyMessages, EmptyChat } from "@/components"
 import { ChatContext, IChatRecipientContext } from "context/chatContext"
 import { auth, database } from "@/firebase"
+import { IModalContext, ModalContext } from "context/modalContext"
 
 export default function AllChats() {
   const { recipientData, isLoading, setLoading } = useContext(
     ChatContext,
   ) as IChatRecipientContext
+  const { openModal } = useContext(ModalContext) as IModalContext
 
   const [messages, setMessages] = useState<IMessage[]>([])
 
@@ -162,6 +164,12 @@ export default function AllChats() {
       }
       set(messageRef, message)
 
+      const chatRef = ref(database, "chats/" + chatId)
+      update(chatRef, {
+        lastMessage: chatText,
+        lastMessageTime: message.createdAt,
+      })
+
       setChatText("")
       scrollToBottom()
       chatTextInputRef.current!.blur()
@@ -188,9 +196,13 @@ export default function AllChats() {
             </p>
           </div>
         </div>
+
         {/* Action Row */}
         <div className="flex items-center gap-5">
-          <button className="p-3 bg-transparent rounded-full active:bg-gray-300">
+          <button
+            className="p-3 bg-transparent rounded-full active:bg-gray-300"
+            onClick={() => openModal("imageUpload")}
+          >
             <Paperclip color="#676767" size={24} weight="bold" />
           </button>
           <button className="p-3 bg-transparent rounded-full active:bg-gray-300">
@@ -205,7 +217,7 @@ export default function AllChats() {
           <EmptyMessages />
         ) : (
           <>
-            <div className="relative flex flex-col h-full gap-1">
+            <div className="relative flex flex-col h-full gap-1 my-3">
               {!isLoading ? (
                 messages.map((message) => (
                   <ChatMessage key={message.uid} message={message} />
@@ -232,7 +244,7 @@ export default function AllChats() {
         <button
           onClick={() => scrollToBottom()}
           className={clsx(
-            "absolute z-50 bottom-20 left-1/2 -translate-x-1/2 p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
+            "absolute z-10 bottom-20 left-1/2 -translate-x-1/2 p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
             !isGotoBottomVisible && "hidden",
           )}
         >

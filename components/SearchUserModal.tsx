@@ -19,7 +19,7 @@ import { Avatar } from "@/components"
 import { IModalContext, ModalContext } from "context/modalContext"
 
 export default function SearchUserModal() {
-  const { isModalVisible, toggleModal } = useContext(
+  const { isModalVisible, modalType, closeModal } = useContext(
     ModalContext,
   ) as IModalContext
 
@@ -56,10 +56,10 @@ export default function SearchUserModal() {
         })
           .catch((err) => console.log(err))
           .finally(() => {
-            toggleModal()
+            closeModal()
           })
       } else {
-        toggleModal()
+        closeModal()
       }
     })
   }
@@ -89,12 +89,10 @@ export default function SearchUserModal() {
 
   return (
     <div
-      onClick={toggleModal}
+      onClick={() => closeModal()}
       className={clsx(
-        {
-          hidden: !isModalVisible,
-        },
-        "fixed w-screen h-screen inset-0 backdrop-blur-[1.2px] z-10 grid place-items-center",
+        isModalVisible && modalType === "searchUser" ? "grid" : "hidden",
+        "fixed w-screen h-screen inset-0 backdrop-blur-[1.2px] z-20  place-items-center",
       )}
     >
       {/* Modal */}

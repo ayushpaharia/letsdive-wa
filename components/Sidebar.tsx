@@ -38,7 +38,7 @@ export default function Sidebar() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  const { toggleModal } = useContext(ModalContext) as IModalContext
+  const { openModal } = useContext(ModalContext) as IModalContext
   const { setRecipientData } = useContext(ChatContext) as IChatRecipientContext
 
   const [allChats, setAllChats] = useState<IChatTabData[]>([])
@@ -97,15 +97,15 @@ export default function Sidebar() {
   }
 
   // Sort chats by last message
-  // const sortChatByLastMessage = (a: IChatTabData, b: IChatTabData) => {
-  //   if (a.lastMessageTime > b.lastMessageTime) {
-  //     return -1
-  //   } else if (a.lastMessageTime < b.lastMessageTime) {
-  //     return 1
-  //   } else {
-  //     return 0
-  //   }
-  // }
+  const sortChatByLastMessage = (a: IChatTabData, b: IChatTabData) => {
+    if (a.lastMessageTime > b.lastMessageTime) {
+      return -1
+    } else if (a.lastMessageTime < b.lastMessageTime) {
+      return 1
+    } else {
+      return 0
+    }
+  }
 
   return (
     <div className="flex flex-col max-h-[calc(100vh-3rem)] min-w-[22rem] max-w-[40rem] overflow-y-hidden relative border-r-[1px] border-solid border-[#ebebeb]">
@@ -123,7 +123,7 @@ export default function Sidebar() {
           </button>
           <button
             title="Find Chat"
-            onClick={toggleModal}
+            onClick={() => openModal("searchUser")}
             className="p-3 bg-transparent rounded-full active:bg-gray-300"
           >
             <ChatText color="#676767" size={24} weight="bold" />
@@ -156,18 +156,16 @@ export default function Sidebar() {
 
       {/* All Chats */}
       <div className="flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
-        {allChats
-          // .sort(sortChatByLastMessage)
-          .map((chatData, idx) => {
-            return (
-              <ChatTab
-                chatId={chatData.uid}
-                recipientId={chatData.recipientId}
-                key={chatData.uid + chatTabId + idx}
-                isActive={chatData.uid === router.query.chatId}
-              />
-            )
-          })}
+        {allChats.sort(sortChatByLastMessage).map((chatData, idx) => {
+          return (
+            <ChatTab
+              chatId={chatData.uid}
+              recipientId={chatData.recipientId}
+              key={chatData.uid + chatTabId + idx}
+              isActive={chatData.uid === router.query.chatId}
+            />
+          )
+        })}
       </div>
     </div>
   )
@@ -246,7 +244,9 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
     return (
       <span className="flex items-center gap-2">
         {messageByState(tabData?.lastMessageState!)}
-        {tabData?.lastMessage}
+        {tabData?.lastMessage && tabData?.lastMessage?.length < 27
+          ? tabData?.lastMessage
+          : tabData?.lastMessage?.slice(0, 27) + "..."}
       </span>
     )
   }

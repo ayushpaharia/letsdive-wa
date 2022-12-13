@@ -1,7 +1,12 @@
 import { NextPage } from "next"
 import Head from "next/head"
 
-import { ChatWindow, Sidebar, SearchUserModal } from "@/components"
+import {
+  ChatWindow,
+  Sidebar,
+  SearchUserModal,
+  ImageUploadModal,
+} from "@/components"
 
 const Home: NextPage = () => {
   return (
@@ -14,6 +19,7 @@ const Home: NextPage = () => {
       <div className="grid h-screen p-5 max-w-screen place-items-center">
         <main className="relative flex w-full h-full bg-gray-100 rounded-sm">
           <SearchUserModal />
+          <ImageUploadModal />
           <Sidebar />
           <ChatWindow />
         </main>

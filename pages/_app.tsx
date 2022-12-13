@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, ReactElement } from "react"
-import { NextPage } from "next"
+import { useEffect } from "react"
 import type { AppProps } from "next/app"
+
+import NextNProgress from "nextjs-progressbar"
 
 import { ref, serverTimestamp, set } from "firebase/database"
 import { auth, database } from "@/firebase"
@@ -8,11 +9,12 @@ import { auth, database } from "@/firebase"
 import "@/css"
 import ModalProvider from "context/modalContext"
 import { useAuthState } from "react-firebase-hooks/auth"
-import Login from "./login"
+import Login from "pages/login"
 import ChatProvider from "context/chatContext"
+import { Spinner } from "phosphor-react"
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [user] = useAuthState(auth)
+  const [user, loading] = useAuthState(auth)
 
   useEffect(() => {
     const onBeforeUnload = async () => {
@@ -43,6 +45,14 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }, [user])
 
+  if (loading) {
+    return (
+      <div className="absolute mx-auto overflow-x-hidden top-1/2 left-1/2 animate-spin">
+        <Spinner size={100} weight="bold" />
+      </div>
+    )
+  }
+
   if (!user) {
     return <Login />
   }
@@ -50,6 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChatProvider>
       <ModalProvider>
+        <NextNProgress />
         <Component {...pageProps} />
       </ModalProvider>
     </ChatProvider>
