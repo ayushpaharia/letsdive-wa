@@ -205,7 +205,7 @@ export default function AllChats() {
           <EmptyMessages />
         ) : (
           <>
-            <div className="relative flex flex-col h-full">
+            <div className="relative flex flex-col h-full gap-1">
               {!isLoading ? (
                 messages.map((message) => (
                   <ChatMessage key={message.uid} message={message} />

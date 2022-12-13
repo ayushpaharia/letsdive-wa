@@ -18,7 +18,7 @@ export default function ChatMessage({ message }: IChatMessageProps) {
     <div
       className={clsx(
         loggedInUser?.uid !== message.senderId && "justify-end",
-        "flex items-center w-full",
+        "flex w-full px-4",
       )}
     >
       <div
@@ -26,7 +26,7 @@ export default function ChatMessage({ message }: IChatMessageProps) {
           loggedInUser?.uid !== message.senderId
             ? "bg-[#dcf8c6]"
             : "bg-gray-200",
-          "relative max-w-[100ch] w-fit min-w-[20ch] text-sm rounded-xl m-4 p-4 pb-[1.5rem] overflow-hidden text-black font-normal",
+          "relative max-w-[100ch] h-full w-fit min-w-[20ch] text-sm rounded-xl p-4 pb-[1.5rem] overflow-hidden text-black font-normal",
         )}
       >
         {message.text}

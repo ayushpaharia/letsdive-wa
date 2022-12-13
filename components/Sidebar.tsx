@@ -194,7 +194,6 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
   useEffect(() => {
     const userRef = ref(database, `/users/${recipientId}`)
     const chatRef = ref(database, `/chats/${chatId}`)
-    let user = {} as IRecipientData
 
     onValue(userRef, (snapshot) => {
       const val = snapshot.val()
@@ -264,7 +263,7 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
         <Avatar width={55} height={55} src={tabData?.photoURL} />
       </span>
       <div className="flex flex-col justify-center flex-1 h-full ml-4">
-        <h3 className="font-bold text-gray-500 text-md">
+        <h3 className="font-bold text-gray-500 truncate text-md">
           {tabData?.name || `${tabData?.email?.split("@")[0] || "..."}`}
         </h3>
         <p className="text-gray-500 truncate text-md group-hover:hidden">
