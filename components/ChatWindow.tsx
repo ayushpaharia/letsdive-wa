@@ -12,7 +12,6 @@ import { useRouter } from "next/router"
 import clsx from "clsx"
 import moment from "moment"
 import data from "@emoji-mart/data"
-//@ts-ignore
 import Picker from "@emoji-mart/react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import {
@@ -202,7 +201,7 @@ export default function AllChats() {
       </div>
 
       {/* Chat Window */}
-      <div className="flex flex-col w-full overflow-y-scroll grow">
+      <div className="relative flex flex-col w-full overflow-y-scroll grow">
         {messages && messages?.length <= 0 ? (
           <EmptyMessages />
         ) : (
@@ -226,20 +225,19 @@ export default function AllChats() {
             </div>
           </>
         )}
-
-        <button
-          onClick={() => scrollToBottom()}
-          className={clsx(
-            !isGotoBottomVisible && "hidden",
-            "absolute z-10 bottom-[100px] right-[270px] p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
-          )}
-        >
-          <ArrowDown color="#676767" size={24} weight="bold" />
-        </button>
       </div>
 
       {/* Text Bar */}
       <div className="relative flex items-center w-full">
+        <button
+          onClick={() => scrollToBottom()}
+          className={clsx(
+            "absolute z-50 bottom-20 left-1/2 -translate-x-1/2 p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
+            !isGotoBottomVisible && "hidden",
+          )}
+        >
+          <ArrowDown color="#676767" size={24} weight="bold" />
+        </button>
         <span
           className="flex items-center h-12 pl-4 cursor-pointer"
           onClick={() => setShowEmojiPicker((prev) => !prev)}
