@@ -7,8 +7,8 @@ const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Chats - letsdive-wa</title>
-        <meta name="description" content="Chats - letsdive-wa" />
+        <title>Chats - yolo-chat</title>
+        <meta name="description" content="Chats - yolo-chat" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="grid h-screen p-5 max-w-screen place-items-center">

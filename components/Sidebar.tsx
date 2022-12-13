@@ -1,7 +1,21 @@
-import { useContext, useEffect, useId, useRef, useState } from "react"
+import {
+  ReactNode,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react"
 import { useRouter } from "next/router"
 
-import { ChatText, MagnifyingGlass, SignOut, House } from "phosphor-react"
+import {
+  ChatText,
+  MagnifyingGlass,
+  SignOut,
+  House,
+  Check,
+  Checks,
+} from "phosphor-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 
 import { auth, database } from "@/firebase"
@@ -160,6 +174,9 @@ interface IChatTabProps {
   recipientId: string
   chatId: string
   isActive: boolean
+  lastMessageTime?: number
+  lastMessage?: string
+  lastMessageState?: MessageState
 }
 type IRecipientData = IChatTabProps & IUser
 
@@ -173,11 +190,34 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
 
   useEffect(() => {
     const userRef = ref(database, `/users/${recipientId}`)
+    let user = {} as IRecipientData
     onValue(userRef, (snapshot) => {
       const val = snapshot.val()
-      const user = val && { uid: recipientId, chatId, ...val }
-      setTabData(user)
+      const userValue = val && { uid: recipientId, chatId, ...val }
+      user = userValue
     })
+
+    const chatRef = ref(database, `/chats/${chatId}`)
+
+    onValue(chatRef, (snapshot) => {
+      const val = snapshot.val()
+
+      const messages =
+        (val && val?.messages && Object.values(val?.messages)) ||
+        ([] as {
+          text: string
+          state: MessageState
+          createdAt: number
+        }[])
+
+      const lastMessage = messages[messages.length - 1]
+
+      user.lastMessageTime = lastMessage?.createdAt
+      user.lastMessage = lastMessage?.text
+      user.lastMessageState = lastMessage?.state
+    })
+
+    setTabData(user as IRecipientData)
   }, [recipientId, setRecipientData, chatId])
 
   const lastSeenTime = "last seen " + moment(tabData?.lastSeen).fromNow()
@@ -188,12 +228,32 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
     setLoading(true)
   }
 
+  const messageByState = (state: MessageState) => {
+    const messageStates: Record<MessageState, JSX.Element> = {
+      sent: <Check size={15} weight="bold" />,
+      delivered: <Checks size={15} weight="bold" />,
+      read: <Checks color="#1476d1" size={15} weight="bold" />,
+    }
+    return (
+      messageStates[state] || <>{tabData?.isActive ? "online" : lastSeenTime}</>
+    )
+  }
+
+  const getLastActivityState = (): ReactNode => {
+    return (
+      <span className="flex items-center gap-2">
+        {messageByState(tabData?.lastMessageState!)}
+        {tabData?.lastMessage}
+      </span>
+    )
+  }
+
   return (
     <div
       onClick={openChat}
       className={clsx(
         isActive && "bg-gray-200",
-        "flex items-center justify-between p-4 pr-5 cursor-pointer hover:bg-gray-200",
+        "flex items-center justify-between p-4 pr-5 cursor-pointer hover:bg-gray-200 group",
       )}
     >
       <span className="">
@@ -201,14 +261,13 @@ function ChatTab({ recipientId, chatId, isActive }: IChatTabProps) {
       </span>
       <div className="flex flex-col justify-center flex-1 h-full ml-4">
         <h3 className="font-bold text-gray-500 text-md">
-          {tabData?.name || tabData?.email.split("@")[0]}
+          {tabData?.name || `${tabData?.email?.split("@")[0] || "..."}`}
         </h3>
-        <p className="text-gray-500 truncate text-md">
-          {tabData?.online
-            ? "online"
-            : tabData?.lastSeen
-            ? lastSeenTime
-            : "..."}
+        <p className="text-gray-500 truncate text-md group-hover:hidden">
+          {getLastActivityState()}
+        </p>
+        <p className="hidden text-gray-500 truncate group-hover:flex text-md">
+          {lastSeenTime}
         </p>
       </div>
     </div>

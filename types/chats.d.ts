@@ -25,5 +25,4 @@ interface IUser {
   name: string
   lastSeen: string
   online: boolean
-  lastRecievedMessage: string
 }

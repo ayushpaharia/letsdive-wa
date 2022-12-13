@@ -139,7 +139,6 @@ export default function AllChats() {
           },
         )
         setMessages(messages)
-        scrollToBottom()
         setLoading(false)
       }
     })
@@ -161,8 +160,8 @@ export default function AllChats() {
         senderId: recipientData?.uid,
         state: recipientData?.online ? "delivered" : "sent",
       }
-
       set(messageRef, message)
+
       setChatText("")
       scrollToBottom()
       chatTextInputRef.current!.blur()
@@ -229,6 +228,7 @@ export default function AllChats() {
 
       {/* Text Bar */}
       <div className="relative flex items-center w-full">
+        {/* Scroll to bottom  */}
         <button
           onClick={() => scrollToBottom()}
           className={clsx(
@@ -238,6 +238,7 @@ export default function AllChats() {
         >
           <ArrowDown color="#676767" size={24} weight="bold" />
         </button>
+
         <span
           className="flex items-center h-12 pl-4 cursor-pointer"
           onClick={() => setShowEmojiPicker((prev) => !prev)}
