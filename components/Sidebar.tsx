@@ -15,6 +15,7 @@ import {
   House,
   Check,
   Checks,
+  Spinner,
 } from "phosphor-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 
@@ -42,6 +43,7 @@ export default function Sidebar() {
   const { setRecipientData } = useContext(ChatContext) as IChatRecipientContext
 
   const [allChats, setAllChats] = useState<IChatTabData[]>([])
+  const [isLoading, setLoading] = useState<boolean>(true)
 
   const chatTabId = useId()
 
@@ -52,6 +54,7 @@ export default function Sidebar() {
     const userChatsRef = ref(database, "/chats")
     onValue(userChatsRef, (snapshot) => {
       const val = snapshot.val()
+
       if (val) {
         const chats = Object.entries(val).map(([key, value]: [string, any]) => {
           return {
@@ -77,6 +80,7 @@ export default function Sidebar() {
           }
         })
         setAllChats(chatTabData)
+        setLoading(false)
       }
     })
   }, [loggedInUser?.uid])
@@ -155,17 +159,36 @@ export default function Sidebar() {
       </div>
 
       {/* All Chats */}
-      <div className="flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
-        {allChats.sort(sortChatByLastMessage).map((chatData, idx) => {
-          return (
-            <ChatTab
-              chatId={chatData.uid}
-              recipientId={chatData.recipientId}
-              key={chatData.uid + chatTabId + idx}
-              isActive={chatData.uid === router.query.chatId}
-            />
-          )
-        })}
+      <div className="relative flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
+        {isLoading ? (
+          <>
+            {Array.from(Array(10)).map((_, idx) => (
+              <div
+                key={"skeleton" + idx}
+                className="flex min-h-[80px] items-center justify-between p-4 pr-5 cursor-pointer skeleton-element"
+              >
+                <span className="">
+                  <Avatar width={55} height={55} src="" />
+                </span>
+                <div className="flex flex-col justify-center flex-1 h-full gap-2 ml-4">
+                  <h3 className="h-[1ch] font-bold truncate bg-gray-200 rounded-full text-md w-30" />
+                  <p className="h-[1ch] w-36 bg-gray-200 truncate text-md" />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          allChats.sort(sortChatByLastMessage).map((chatData, idx) => {
+            return (
+              <ChatTab
+                chatId={chatData.uid}
+                recipientId={chatData.recipientId}
+                key={chatData.uid + chatTabId + idx}
+                isActive={chatData.uid === router.query.chatId}
+              />
+            )
+          })
+        )}
       </div>
     </div>
   )

@@ -54,7 +54,11 @@ export default function AllChats() {
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView()
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    })
   }
 
   const [isGotoBottomVisible, setGotoBottomVisible] = useState<boolean>(false)
@@ -142,6 +146,7 @@ export default function AllChats() {
         )
         setMessages(messages)
         setLoading(false)
+        scrollToBottom()
       }
     })
 
@@ -149,6 +154,10 @@ export default function AllChats() {
       off(messagesRef)
     }
   }, [chatId, setLoading])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [isLoading])
 
   const sendMessage = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && chatText !== "") {
@@ -179,6 +188,7 @@ export default function AllChats() {
   const messageSentTime = moment(recipientData?.lastSeen).fromNow()
 
   if (!recipientData) return <EmptyChat />
+
   return (
     <div className="flex flex-col items-center w-full h-full max-h-[calc(100vh-3rem)]  text-5xl font-bold text-gray-400">
       {/* Top Bar */}
@@ -217,7 +227,7 @@ export default function AllChats() {
           <EmptyMessages />
         ) : (
           <>
-            <div className="relative flex flex-col h-full gap-1 my-3">
+            <div className="relative flex flex-col h-full gap-1 mx-16 my-3">
               {!isLoading ? (
                 messages.map((message) => (
                   <ChatMessage key={message.uid} message={message} />
@@ -244,7 +254,7 @@ export default function AllChats() {
         <button
           onClick={() => scrollToBottom()}
           className={clsx(
-            "absolute z-10 bottom-20 left-1/2 -translate-x-1/2 p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
+            "absolute z-10 bottom-20 right-6 p-3 rounded-full bg-black bg-opacity-5 active:bg-gray-300 hover:-translate-y-1 ease-linear transition-all duration-100",
             !isGotoBottomVisible && "hidden",
           )}
         >

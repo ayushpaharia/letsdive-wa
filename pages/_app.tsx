@@ -47,8 +47,13 @@ export default function App({ Component, pageProps }: AppProps) {
 
   if (loading) {
     return (
-      <div className="absolute mx-auto overflow-x-hidden top-1/2 left-1/2 animate-spin">
-        <Spinner size={100} weight="bold" />
+      <div className="absolute mx-auto overflow-x-hidden -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+        <Spinner
+          size={100}
+          color="#676767"
+          weight="bold"
+          className="animate-spin"
+        />
       </div>
     )
   }

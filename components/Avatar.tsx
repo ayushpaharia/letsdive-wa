@@ -19,8 +19,8 @@ export default function Avatar({ src, width = 60, height = 60 }: IAvatarProps) {
           src={src as string}
         />
       ) : (
-        <span className="flex items-center justify-center h-[50px] w-[50px] bg-gray-300 rounded-full">
-          <User size={32} weight="fill" color="#888" />
+        <span className="flex items-center justify-center h-[50px] w-[50px] bg-gray-200 rounded-full">
+          <User size={32} weight="fill" color="#bbb" />
         </span>
       )}
     </>

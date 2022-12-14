@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+.skeleton-element {
+  position: relative;
+  overflow: hidden;
+  opacity: 0.7;
+  animation: skeleton-loading 0.5s linear infinite alternate;
+}
+.skeleton-element::before {
+  @apply z-50 bg-white opacity-50;
+  content: "";
+  display: block;
+  height: 100%;
+  width: 50px;
+  transform: skew(30deg);
+  position: absolute;
+  animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+@keyframes shimmer {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 html,
 body {
   padding: 0;
