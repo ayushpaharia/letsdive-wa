@@ -7,8 +7,6 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./context/**/*.{js,jsx,ts,tsx}",
   ],
-  theme: {
-    extend: {},
-  },
+  theme: {},
   plugins: [],
 }

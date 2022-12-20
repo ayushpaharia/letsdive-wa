@@ -15,7 +15,6 @@ import {
   House,
   Check,
   Checks,
-  Spinner,
 } from "phosphor-react"
 import { useAuthState } from "react-firebase-hooks/auth"
 
@@ -159,7 +158,8 @@ export default function Sidebar() {
       </div>
 
       {/* All Chats */}
-      <div className="relative flex flex-col flex-1 py-3 overflow-y-scroll divide-y-2 scrollbar-hide">
+      <div className="relative flex flex-col flex-1 py-3 overflow-y-hidden divide-y-2 scrollbar-hide">
+        {/* Skeleton Elements */}
         {isLoading ? (
           <>
             {Array.from(Array(10)).map((_, idx) => (

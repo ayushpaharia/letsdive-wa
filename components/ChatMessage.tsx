@@ -24,7 +24,7 @@ export default function ChatMessage({ message }: IChatMessageProps) {
       <div
         className={clsx(
           loggedInUser?.uid !== message.senderId
-            ? "bg-[#dcf8c6]"
+            ? "bg-[#f2eaff]"
             : "bg-gray-200",
           "relative max-w-[100ch] h-full w-fit min-w-[20ch] text-sm rounded-xl p-4 pb-[1.5rem] overflow-hidden text-black font-normal",
         )}

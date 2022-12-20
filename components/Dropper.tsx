@@ -1,4 +1,3 @@
-import { Storage } from "aws-amplify"
 import React, { useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { s3Upload } from "../libs/awsLib"
@@ -47,8 +46,8 @@ export default function S3ImageUploader() {
         className="flex flex-col items-center m-4 dropzone"
       >
         {/* <input {...getInputProps()} /> */}
-        <FileArrowUp size={100} weight="bold" />
-        <div className="text-2xl font-medium">
+        <FileArrowUp size={100} color="#8247E5" weight="regular" />
+        <div className="text-lg font-medium text-center">
           Drop files or click to upload
         </div>
       </div>

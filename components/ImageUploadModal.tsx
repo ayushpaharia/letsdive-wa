@@ -20,7 +20,7 @@ export default function SearchUserModal() {
     >
       {/* Modal */}
       <div
-        className="min-w-[500px] w-[40vw] bg-gray-200 shadow-lg"
+        className="w-[300px] bg-gray-100 shadow-lg rounded-xl border-[5px] p-4 border-dashed border-[#8247E5]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image Uploader */}

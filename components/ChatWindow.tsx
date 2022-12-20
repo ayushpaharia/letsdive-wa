@@ -36,6 +36,7 @@ import { Avatar, ChatMessage, EmptyMessages, EmptyChat } from "@/components"
 import { ChatContext, IChatRecipientContext } from "context/chatContext"
 import { auth, database } from "@/firebase"
 import { IModalContext, ModalContext } from "context/modalContext"
+import { useClickOutside } from "hooks"
 
 export default function AllChats() {
   const { recipientData, isLoading, setLoading } = useContext(
@@ -47,7 +48,6 @@ export default function AllChats() {
 
   const chatTextInputRef = useRef<HTMLInputElement>(null)
   const [chatText, setChatText] = useState("")
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   const router = useRouter()
   const { chatId } = router.query
@@ -185,14 +185,19 @@ export default function AllChats() {
     }
   }
 
-  const messageSentTime = moment(recipientData?.lastSeen).fromNow()
+  const lastSeenTime = "last seen " + moment(recipientData?.lastSeen).fromNow()
+
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false)
+  const emojiRef = useClickOutside(() => setShowEmojiPicker(false))
 
   if (!recipientData) return <EmptyChat />
+
+  // use click outside hook
 
   return (
     <div className="flex flex-col items-center w-full h-full max-h-[calc(100vh-3rem)]  text-5xl font-bold text-gray-400">
       {/* Top Bar */}
-      <div className="flex items-center justify-between w-full px-5 py-3 bg-gray-200">
+      <div className="flex items-center justify-between w-full px-5 py-3 bg-gray-200 ">
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Avatar width={50} height={50} src={recipientData?.photoURL} />
           <div className="flex flex-col">
@@ -201,7 +206,7 @@ export default function AllChats() {
               {recipientData?.online
                 ? "online"
                 : recipientData?.lastSeen
-                ? messageSentTime
+                ? lastSeenTime
                 : "..."}
             </p>
           </div>
@@ -262,7 +267,8 @@ export default function AllChats() {
         </button>
 
         <span
-          className="flex items-center h-12 pl-4 cursor-pointer"
+          className="flex items-center h-12 p-3 ml-4 bg-transparent rounded-full cursor-pointer active:bg-gray-300"
+          ref={emojiRef}
           onClick={() => setShowEmojiPicker((prev) => !prev)}
         >
           <Smiley color="#676767" size={24} weight="bold" />
