@@ -1,5 +1,4 @@
 import Head from "next/head"
-import Image from "next/image"
 import router from "next/router"
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
@@ -12,7 +11,6 @@ import {
   MonitorPlay,
   PhoneCall,
   SunHorizon,
-  XCircle,
 } from "phosphor-react"
 import { useEffect, useId, useState } from "react"
 import clsx from "clsx"
@@ -58,9 +56,9 @@ export default function Login() {
         <meta name="description" content="Login - yolo-chat" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col w-full min-h-screen">
-        <nav className="flex items-center w-full gap-12 px-8 border-b-2 border-solid h-fit">
-          <h3 className="flex items-center gap-2 text-lg font-black">
+      <div className="flex flex-col min-h-screen ">
+        <nav className="flex items-center gap-12 px-8 border-b-2 border-solid">
+          <h3 className="flex items-center gap-2 text-lg font-black whitespace-nowrap">
             <SunHorizon size={32} color="#8247E5" weight="bold" />
             yolo chat
           </h3>
