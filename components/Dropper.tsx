@@ -1,7 +1,5 @@
 import React, { useState } from "react"
 import { v4 as uuidv4 } from "uuid"
-import { s3Upload } from "../libs/awsLib"
-import { Accept, useDropzone } from "react-dropzone"
 import { FileArrowUp, FileX } from "phosphor-react"
 import Image from "next/image"
 
