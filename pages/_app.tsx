@@ -56,10 +56,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </div>
     )
   }
-  if (!loading) {
-    return <div className="w-screen h-screen bg-red-100">12312312</div>
-  }
-
   if (!user) {
     return <Login />
   }
